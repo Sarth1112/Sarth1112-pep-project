@@ -26,6 +26,7 @@ public class SocialMediaController {
     public Javalin startAPI() {
         Javalin app = Javalin.create();
         app.post("/register", this::register);
+        app.post("/login", this::login);
 
         return app;
     }
@@ -41,11 +42,28 @@ public class SocialMediaController {
         //validate and register
         Account registered = accountService.register(account);
 
+
         if(registered != null){
             context.json(registered);
             context.status(200);
         }else {
             context.status(400);
+        }
+
+    }
+
+    //this end point, grabs the login information, Checks with the service layer for the login information
+    private void login(Context context) {
+        Account account = context.bodyAsClass(Account.class);
+        
+        
+        Account loginAccount = accountService.login(account);
+
+        if(loginAccount !=  null){
+            context.json(loginAccount);
+            context.status(200);
+        }else {
+            context.status(401);
         }
 
     }

@@ -36,10 +36,15 @@ public class AccountService {
 
 
         //All good
-        return dao.inserAccount(account);
+        return dao.insertAccount(account);
     
 
     } 
 
+    //Login Logic: using DAO which interacts with the database. Get the username and password.
+    public Account login(Account account){
+        
+        return dao.getAccountByUserNameAndPassword(account.getUsername(),account.getPassword());
+    }
     
 }
