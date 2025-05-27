@@ -1,6 +1,6 @@
 package DAO;
 
-import java.beans.Statement;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -81,6 +81,27 @@ public class AccountDAO {
         }
     return null;
     }
+
+    public Account getAccountById(int accountId) {
+    Connection connection = ConnectionUtil.getConnection();
+    try {
+        String sql = "SELECT * FROM Account WHERE account_id = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, accountId);
+
+        ResultSet rs = preparedStatement.executeQuery();
+        if (rs.next()) {
+            return new Account(
+                rs.getInt("account_id"),
+                rs.getString("username"),
+                rs.getString("password")
+            );
+        }
+    } catch (SQLException e) {
+        System.out.println(e.getMessage());
+    }
+    return null;
+}
 
     
     

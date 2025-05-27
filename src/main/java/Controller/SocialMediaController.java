@@ -1,7 +1,9 @@
 package Controller;
 
 import Model.Account;
+import Model.Message;
 import Service.AccountService;
+import Service.MessageService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
@@ -18,6 +20,7 @@ public class SocialMediaController {
      */
 
      private AccountService accountService;
+     private MessageService messageService;
 
      public SocialMediaController(){
         this.accountService = new AccountService();
@@ -27,6 +30,7 @@ public class SocialMediaController {
         Javalin app = Javalin.create();
         app.post("/register", this::register);
         app.post("/login", this::login);
+        app.post("/messages",this::messages);
 
         return app;
     }
@@ -64,6 +68,21 @@ public class SocialMediaController {
             context.status(200);
         }else {
             context.status(401);
+        }
+
+    }
+
+     private void messages(Context context) {
+        Message message = context.bodyAsClass(Message.class);
+        
+        
+        Message messages = messageService.messages(message);
+
+        if(messages !=  null){
+            context.json(messages);
+            context.status(200);
+        }else {
+            context.status(400);
         }
 
     }
