@@ -15,29 +15,34 @@ public class MessageService {
         this.accountDAO = new AccountDAO();
     }
 
-  
-
-
-    //logic for the messages API
-    public Message messages(Message message){
-        
-        if(message.getMessage_text() == null || message.getMessage_text().isBlank()){
-            return null;
-        }
-        if(message.getMessage_text().length() > 255){
+    public Message createMessage(Message message) {
+        if (message == null) {
             return null;
         }
         
-        //getPosted by is the foreign key which references to account_id
-        Account existingAccount = accountDAO.getAccountById(message.getPosted_by());
-
-        if(existingAccount == null){
+        if (message.getMessage_text() == null || message.getMessage_text().trim().isEmpty()) {
             return null;
         }
-        return dao.insertMessage(message);
-
-
+        
+        if (message.getMessage_text().length() > 255) {
+            return null;
+        }
+        
+        
+        try {
+            Account account = accountDAO.getAccountById(message.getPosted_by());
+            if (account == null) {
+                return null;
+            }
+        } catch (Exception e) {
+            System.err.println("Error checking account existence: " + e.getMessage());
+            return null;
+        }
+        // In your MessageService.createMessage method, add:
+        Message created = dao.insertMessage(message);
+        if (created != null) {
+            System.out.println("Created message with ID: " + created.getMessage_id());
+        }
+        return created;
     }
-
-    
 }

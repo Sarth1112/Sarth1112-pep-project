@@ -82,25 +82,26 @@ public class AccountDAO {
     return null;
     }
 
-    public Account getAccountById(int accountId) {
-    Connection connection = ConnectionUtil.getConnection();
-    try {
-        String sql = "SELECT * FROM Account WHERE account_id = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, accountId);
+     public Account getAccountById(int accountId) {
+        // Use try-with-resources for automatic resource management
+        try (Connection connection = ConnectionUtil.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM Account WHERE account_id = ?")) {
+            
+            preparedStatement.setInt(1, accountId);
 
-        ResultSet rs = preparedStatement.executeQuery();
-        if (rs.next()) {
-            return new Account(
-                rs.getInt("account_id"),
-                rs.getString("username"),
-                rs.getString("password")
-            );
+            try (ResultSet rs = preparedStatement.executeQuery()) { // Use try-with-resources for ResultSet
+                if (rs.next()) {
+                    return new Account(
+                        rs.getInt("account_id"),
+                        rs.getString("username"),
+                        rs.getString("password")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
-    } catch (SQLException e) {
-        System.out.println(e.getMessage());
-    }
-    return null;
+        return null;
 }
 
     

@@ -72,20 +72,33 @@ public class SocialMediaController {
 
     }
 
-     private void messages(Context context) {
+  private void messages(Context context) {
+    try {
         Message message = context.bodyAsClass(Message.class);
         
+        if (message == null) {
+            context.status(400);
+            return;
+        }
         
-        Message messages = messageService.messages(message);
 
-        if(messages !=  null){
-            context.json(messages);
+        
+        Message created = messageService.createMessage(message);
+
+        if (created != null) {
+            context.json(created);
             context.status(200);
-        }else {
+        } else {
             context.status(400);
         }
-
+        
+    } catch (Exception e) {
+        System.err.println("Error in messages endpoint: " + e.getMessage());
+        //e.printStackTrace();
+        
+        context.status(500);
     }
+}
 
 
 }
