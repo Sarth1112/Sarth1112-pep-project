@@ -82,5 +82,10 @@ public class MessageService {
     existing.setMessage_text(message.getMessage_text());
     dao.updateMessageById(existing);
     return existing;
-}
+    }
+
+
+    public List<Message> getMessagesByAccountId(int accountId){
+        return dao.getMessagesByAccountId(accountId);
+    }
 }
