@@ -4,6 +4,7 @@ import DAO.AccountDAO;
 import DAO.MessageDAO;
 import Model.Account;
 import Model.Message;
+import java.util.*;
 
 public class MessageService {
 
@@ -45,4 +46,41 @@ public class MessageService {
         }
         return created;
     }
+
+    public List<Message> getAllmessages(){
+        return dao.getAllmessages();
+    }
+
+    public Message getMessageByID(int id){
+       return dao.getMessageByID(id);
+
+    }
+
+    public Message deleteMessageById(int id){
+        Message toDelete = dao.getMessageByID(id);
+
+        if(toDelete != null){
+            dao.deleteMessageById(id);
+        }
+
+        return toDelete;
+        
+
+    }
+
+    //updating the existing here, then passing it to database
+   public Message updateMessage(Message message) {
+    if (message.getMessage_text() == null || message.getMessage_text().isBlank() || message.getMessage_text().length() > 255) {
+        return null;
+    }
+
+    Message existing = dao.getMessageByID(message.getMessage_id());
+    if (existing == null) {
+        return null; // Message doesn't exist
+    }
+
+    existing.setMessage_text(message.getMessage_text());
+    dao.updateMessageById(existing);
+    return existing;
+}
 }

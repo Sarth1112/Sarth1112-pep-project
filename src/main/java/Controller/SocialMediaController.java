@@ -6,6 +6,7 @@ import Service.AccountService;
 import Service.MessageService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import java.util.*;
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller. The endpoints you will need can be
@@ -24,6 +25,7 @@ public class SocialMediaController {
 
      public SocialMediaController(){
         this.accountService = new AccountService();
+        this.messageService = new MessageService();
      }
 
     public Javalin startAPI() {
@@ -31,7 +33,10 @@ public class SocialMediaController {
         app.post("/register", this::register);
         app.post("/login", this::login);
         app.post("/messages",this::messages);
-
+        app.get("/messages",this::getAllmessages);
+        app.get("/messages/{message_id}", this::getMessageById);
+        app.delete("/messages/{message_id}",this::deleteMessageById);
+        app.patch("/messages/{message_id}", this::updateMessageById);
         return app;
     }
 
@@ -71,6 +76,56 @@ public class SocialMediaController {
         }
 
     }
+
+
+    private void getAllmessages(Context context){
+        List<Message> messages = messageService.getAllmessages();
+        context.json(messages);
+
+    }
+
+    private void getMessageById(Context context){
+        int id = Integer.parseInt(context.pathParam("message_id"));
+        Message message = messageService.getMessageByID(id);
+
+        if(message != null){
+            context.json(message);
+        }else {
+            context.result("");
+        }
+
+    }
+
+    private void deleteMessageById(Context context){
+        int id = Integer.parseInt(context.pathParam("message_id"));
+        Message deleted = messageService.deleteMessageById(id);
+
+        if(deleted != null){
+            context.json(deleted);
+        }else {
+            context.json("");
+        }
+
+
+
+
+    }
+
+    private void updateMessageById(Context context){
+        int id = Integer.parseInt(context.pathParam("message_id"));
+        Message incoming = context.bodyAsClass(Message.class);
+        incoming.setMessage_id(id);
+        Message updated = messageService.updateMessage(incoming);
+
+        if(updated == null){
+            context.json(400);
+        }else{
+            context.json(updated);
+        }
+
+    }
+
+
 
   private void messages(Context context) {
     try {
